@@ -1,0 +1,22 @@
+import { Button, Typography, Container, Box } from "@mui/material";
+import { Link } from "react-router-dom";
+
+const Erreur404 = () => {
+  return (
+    <Container maxWidth="sm" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
+      <Typography variant="h1" component="h1" gutterBottom align="center" color="textPrimary">
+        404
+      </Typography>
+      <Typography variant="h6" align="center" color="textSecondary" paragraph>
+        Oups ! La page que tu cherches n'existe pas.
+      </Typography>
+      <Box mt={4}>
+        <Button variant="contained" color="primary" component={Link} to="/">
+          Retourner à l'accueil
+        </Button>
+      </Box>
+    </Container>
+  );
+};
+
+export default Erreur404;
