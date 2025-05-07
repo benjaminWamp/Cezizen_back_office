@@ -12,16 +12,15 @@ import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { FormSchema } from "../validation/categoryValidation";
 
 import { useUser } from "@clerk/clerk-react";
-import useCitizens from "../hooks/useUsers";
+import useUsers from "../hooks/useUsers";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
-  { field: "name", headerName: "Nom", width: 130 },
-  { field: "description", headerName: "Description", width: 750 },
+  { field: "label", headerName: "Nom", width: 300 },
 ];
 
 const Index = () => {
-  const { fetchCitizens, citizens, fetchCitizenActive } = useCitizens();
+  const { fetchUserActive } = useUsers();
   const { user } = useUser();
 
   const { fetchCategories, categories, loading, error, createCategory, updateCategory, deleteCategory } = useCategories();
@@ -32,19 +31,11 @@ const Index = () => {
 
   const debouncedSearch = useDebounce(search, 500);
 
-  const createCitizenFormConfig: FieldConfig[] = [
+  const createUserFormConfig: FieldConfig[] = [
     {
-      name: "name",
+      name: "label",
       label: "Nom",
       type: "text",
-      defaultValue: "",
-      validation: { required: "Le nom est requis" },
-      showOn: "always",
-    },
-    {
-      name: "description",
-      label: "Description",
-      type: "textArea",
       defaultValue: "",
       validation: { required: "Le nom est requis" },
       showOn: "always",
@@ -56,7 +47,7 @@ const Index = () => {
     const fetchUserRole = async () => {
       if (user?.id) {
         try {
-          const citizen = await fetchCitizenActive(user.id);
+          const citizen = await fetchUserActive(user.id);
           if (citizen?.role?.name === "USER") {
             window.location.href = "/401";
           }
@@ -121,7 +112,7 @@ const Index = () => {
             onClose={() => handleCloseModal()}
             FormSchema={FormSchema}
             title={formData ? "Modifier une catégorie" : "Créer une catégorie"}
-            fields={createCitizenFormConfig}
+            fields={createUserFormConfig}
             onSubmit={(data) => handleSubmitClick(data)}
             initialData={formData}
             TransitionProps={{ onExited: () => setFormData(null) }}

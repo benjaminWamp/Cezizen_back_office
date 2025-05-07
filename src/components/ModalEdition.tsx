@@ -53,7 +53,8 @@ export interface FieldConfig {
     | "roleId"
     | "lastname"
     | "bannerId"
-    | "fileId";
+    | "fileId"
+    | "label";
   label: string;
   type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "textArea" | "date" | "checkbox" | "textArea";
   defaultValue?: string | number;

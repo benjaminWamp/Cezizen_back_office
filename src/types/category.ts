@@ -1,10 +1,10 @@
-import { ResourceType } from "./article";
+import { ArticleType } from "./article";
 
 export interface CategoryType {
     id:  string  
     name: string
     description: string 
-    ressources: ResourceType[]
+    ressources: ArticleType[]
 }
 
 export interface CategoryAddType
