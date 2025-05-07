@@ -3,18 +3,18 @@ import { Box, Grid, Card, CardContent, Typography, Button, CircularProgress } fr
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { useUser } from "@clerk/clerk-react";
 
-import useCitizens from "../hooks/useUsers";
+import useUsers from "../hooks/useUsers";
 import useResources from "../hooks/useResources";
 
 interface StatsData {
-  citizensCount: number;
+  usersCount: number;
   resourcesCount: number;
 }
 
 const COLORS = ["#8884d8", "#82ca9d"];
 
 const StatsPage: React.FC = () => {
-  const { fetchCitizens, citizens, fetchCitizenActive } = useCitizens();
+  const { fetchUsers, users, fetchUserActive } = useUsers();
   const { fetchResources, resources } = useResources();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,8 +25,8 @@ const StatsPage: React.FC = () => {
     const fetchUserRole = async () => {
       if (user?.id) {
         try {
-          const citizen = await fetchCitizenActive(user.id);
-          if (citizen?.role?.name === "USER" || citizen?.role?.name === "MODERATOR") {
+          const userActive = await fetchUserActive(user.id);
+          if (userActive?.role?.name === "USER" || userActive?.role?.name === "MODERATOR") {
             window.location.href = "/401";
           }
         } catch (error) {
@@ -40,14 +40,14 @@ const StatsPage: React.FC = () => {
 
   useEffect(() => {
     // on récupère seulement les totaux
-    Promise.all([fetchCitizens({ page: 1, perPage: 1 }), fetchResources({ page: 1, perPage: 1 })])
+    Promise.all([fetchUsers({ page: 1, perPage: 1 }), fetchResources({ page: 1, perPage: 1 })])
       .catch((err) => setError(err.message || "Erreur réseau"))
       .finally(() => setLoading(false));
-  }, [fetchCitizens, fetchResources]);
+  }, [fetchUsers, fetchResources]);
 
   // Prépare les données pour le camembert
   const pieData = [
-    { name: "Citoyens", value: citizens.total },
+    { name: "Citoyens", value: users.total },
     { name: "Ressources", value: resources.total },
   ];
 
@@ -89,7 +89,7 @@ const StatsPage: React.FC = () => {
           <Card>
             <CardContent>
               <Typography>Nombre total de citoyens</Typography>
-              <Typography>{citizens.total}</Typography>
+              <Typography>{users.total}</Typography>
             </CardContent>
           </Card>
         </Grid>
