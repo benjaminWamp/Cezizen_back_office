@@ -20,7 +20,6 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { StepType } from "../types/step";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,11 +47,11 @@ export interface FieldConfig {
     | "categoryId"
     | "isValidate"
     | "typeRessourceId"
-    | "name"
+    | "firstname"
     | "email"
     | "password"
     | "roleId"
-    | "surname"
+    | "lastname"
     | "bannerId"
     | "fileId";
   label: string;
@@ -98,8 +97,6 @@ const GenericModal: React.FC<GenericModalProps> = ({
 }) => {
   const isEdit = Boolean(initialData);
 
-  console.log("isEdit", isEdit, "initialData", initialData);
-
   type FormSchemaType = z.infer<typeof FormSchema>;
 
   const {
@@ -113,26 +110,12 @@ const GenericModal: React.FC<GenericModalProps> = ({
     defaultValues: initialData?.row ? initialData.row : {},
   });
 
-  console.log("🚧 -> :110 -> errors 🚧", errors);
-
   // Show/hide password state
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
-  const [steps, setSteps] = useState<Pick<StepType, "id" | "title" | "description" | "order">[]>([]);
 
   useEffect(() => {
     // Reset du formulaire avec initialData
     reset(initialData?.row || {});
-
-    // S'il y a des étapes, on les ajoute au state
-    if (initialData?.row?.step) {
-      setSteps(
-        initialData.row.step.sort(
-          (a: Pick<StepType, "id" | "title" | "description" | "order">, b: Pick<StepType, "id" | "title" | "description" | "order">) => a.order - b.order
-        )
-      );
-    } else {
-      setSteps([]);
-    }
 
     // Initialisation de l'état showPassword à false pour tous les champs password
     const initVisibility: Record<string, boolean> = {};
@@ -150,30 +133,19 @@ const GenericModal: React.FC<GenericModalProps> = ({
   };
 
   const handlePatch = (data: any) => {
-    const payload: Record<string, any> = { id: initialData?.id };
+    const payload: Record<string, any> = initialData.row.clerkId ? { id: initialData?.id, clerkId: initialData.row.clerkId } : { id: initialData?.id };
     Object.keys({ ...dirtyFields }).forEach((key) => {
       payload[key] = data[key];
     });
     if (onSubmit) {
-      onSubmit(steps.length > 0 ? { ...payload, step: steps } : payload);
+      onSubmit(payload);
     }
   };
 
-  const handleAddStep = () => {
-    const newStep: Pick<StepType, "id" | "title" | "description" | "order"> = {
-      id: "",
-      title: "",
-      description: "",
-      order: steps.length + 1,
-    };
-    setSteps((prev) => [...prev, newStep]);
-  };
-
   const handleCreate = (payload: FormSchemaType) => {
-    const resource = { ...payload, step: payload.steps, id: initialData?.id };
-    delete resource.steps;
+    const resource = { ...payload, id: initialData?.id };
     if (onSubmit) {
-      onSubmit(steps.length > 0 ? resource : payload);
+      onSubmit(resource);
     }
   };
 
@@ -282,89 +254,6 @@ const GenericModal: React.FC<GenericModalProps> = ({
               />
             );
           })}
-          {interfaceActive === "resource" && (
-            <>
-              <Divider sx={{ margin: "1rem 0" }} />
-              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <Typography variant="h6">Étapes</Typography>
-                <Button onClick={handleAddStep}>Ajouter +</Button>
-              </Box>
-            </>
-          )}
-          {steps &&
-            steps.map((step: any, index: number) => (
-              <React.Fragment key={`step-${index}`}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    ml: 2,
-                    flexDirection: "column",
-                    width: "100%",
-                    margin: "0",
-                    gap: 1,
-                    mb: 3,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 2,
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <InputLabel>Étape</InputLabel>
-                      <Controller
-                        name={`steps.${index}.order`}
-                        control={control}
-                        defaultValue={step.order}
-                        render={({ field: ctrl }) => (
-                          <TextField {...ctrl} type="number" variant="standard" sx={{ width: "30px" }} onChange={(e) => ctrl.onChange(e.target.value)} />
-                        )}
-                      />
-                    </Box>
-                    <Button onClick={() => setSteps((prev) => prev.filter((s) => s.id !== step.id))} sx={{ minWidth: "unset" }}>
-                      <DeleteIcon color="error" />
-                    </Button>
-                  </Box>
-                  <Controller
-                    name={`steps.${index}.title`}
-                    control={control}
-                    defaultValue={step.title}
-                    render={({ field: ctrl, fieldState: { error } }) => (
-                      <TextField
-                        label="Titre *"
-                        fullWidth
-                        error={!!error}
-                        helperText={error?.message}
-                        {...ctrl}
-                        onChange={(e) => {
-                          ctrl.onChange(e.target.value);
-                        }}
-                      />
-                    )}
-                  />
-                  <Controller
-                    name={`steps.${index}.description`}
-                    control={control}
-                    defaultValue={step.description}
-                    render={({ field: ctrl, fieldState: { error } }) => (
-                      <TextField
-                        label="Description *"
-                        error={!!error}
-                        helperText={error?.message}
-                        multiline
-                        type="text"
-                        {...ctrl}
-                        onChange={(e) => ctrl.onChange(e.target.value)}
-                        fullWidth
-                      />
-                    )}
-                  />
-                </Box>
-              </React.Fragment>
-            ))}
         </form>
       </DialogContent>
       <DialogActions sx={{ justifyContent: initialData?.id ? "space-between" : "flex-end" }}>

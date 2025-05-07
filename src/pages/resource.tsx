@@ -5,7 +5,7 @@ import GridComponent from "../components/Grid";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import { useState } from "react";
-import { ResourceType } from "../types/resource";
+import { ResourceType } from "../types/article";
 import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
@@ -14,9 +14,8 @@ import useCategory from "../hooks/useCategory";
 import useResourcesType from "../hooks/useResourceType";
 import { formatISOToDateInput } from "../utils/date";
 import { FormSchema } from "../validation/resourceValidation";
-import useCitizens from "../hooks/useCitizens";
+import useCitizens from "../hooks/useUsers";
 import { useUser } from "@clerk/clerk-react";
-
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
@@ -61,7 +60,6 @@ const columns: GridColDef[] = [
 const Index = () => {
   const { fetchCitizenActive } = useCitizens();
   const { user } = useUser();
-
 
   const { fetchResources, resources, loading, error, createResource, updateResource, deleteResource, fetchResource, validateResource } = useResources();
   const { fetchCategories, categories } = useCategory();
@@ -111,24 +109,23 @@ const Index = () => {
 
   const debouncedSearch = useDebounce(search, 500);
 
-    // Récupération du rôle utilisateur et log si USER
-    useEffect(() => {
-      const fetchUserRole = async () => {
-        if (user?.id) {
-          try {
-            const citizen = await fetchCitizenActive(user.id);
-            if (citizen?.role?.name === "USER") {
-              console.log("Rôle détecté : USER");
-              window.location.href = "/401";
-            }
-          } catch (error) {
-            console.error("Erreur lors de la récupération du citoyen actif :", error);
+  // Récupération du rôle utilisateur et log si USER
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user?.id) {
+        try {
+          const citizen = await fetchCitizenActive(user.id);
+          if (citizen?.role?.name === "USER") {
+            window.location.href = "/401";
           }
+        } catch (error) {
+          console.error("Erreur lors de la récupération du citoyen actif :", error);
         }
-      };
-  
-      fetchUserRole();
-    }, [user]);
+      }
+    };
+
+    fetchUserRole();
+  }, [user]);
 
   useEffect(() => {
     fetchCategories();

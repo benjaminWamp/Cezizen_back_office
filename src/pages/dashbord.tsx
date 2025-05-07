@@ -3,7 +3,7 @@ import { Box, Grid, Card, CardContent, Typography, Button, CircularProgress } fr
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { useUser } from "@clerk/clerk-react";
 
-import useCitizens from "../hooks/useCitizens";
+import useCitizens from "../hooks/useUsers";
 import useResources from "../hooks/useResources";
 
 interface StatsData {
@@ -20,25 +20,23 @@ const StatsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { user } = useUser();
 
-
-    // Récupération du rôle utilisateur et log si USER
-    useEffect(() => {
-      const fetchUserRole = async () => {
-        if (user?.id) {
-          try {
-            const citizen = await fetchCitizenActive(user.id);
-            if (citizen?.role?.name === "USER" || citizen?.role?.name === "MODERATOR") {
-              console.log("Rôle détecté : USER");
-              window.location.href = "/401";
-            }
-          } catch (error) {
-            console.error("Erreur lors de la récupération du citoyen actif :", error);
+  // Récupération du rôle utilisateur et log si USER
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user?.id) {
+        try {
+          const citizen = await fetchCitizenActive(user.id);
+          if (citizen?.role?.name === "USER" || citizen?.role?.name === "MODERATOR") {
+            window.location.href = "/401";
           }
+        } catch (error) {
+          console.error("Erreur lors de la récupération du citoyen actif :", error);
         }
-      };
-  
-      fetchUserRole();
-    }, [user]);
+      }
+    };
+
+    fetchUserRole();
+  }, [user]);
 
   useEffect(() => {
     // on récupère seulement les totaux

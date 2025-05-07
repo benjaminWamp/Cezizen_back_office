@@ -34,14 +34,12 @@ function App() {
   return (
     <div className="app" style={{ height: `calc(100vh - ${headerHeight}px)` }}>
       <Routes>
-        <Route path="/citizens" element={<Index />} />
-        <Route path="/resources" element={<Resource />} />
-        <Route path="/roles" element={<Role />} />
+        <Route path="/users" element={<Index />} />
+        <Route path="/articles" element={<Resource />} />
         <Route path="*" element={<Erreur404 />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<StatsPage />} />
         <Route path="/categories" element={<Category />} />
-        <Route path="/resource-types" element={<ResourceType />} />
         <Route
           path="/"
           element={
@@ -57,7 +55,6 @@ function App() {
         />
         <Route path="*" element={<Erreur404 />} />
         <Route path="/401" element={<Erreur401 />} />
-        <Route path="/comments" element={<Comment />} />
       </Routes>
     </div>
   );

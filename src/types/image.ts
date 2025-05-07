@@ -1,4 +1,4 @@
-import { ResourceType } from "./resource";
+import { ResourceType } from "./article";
 
 export interface ImageType {
     id: string;

@@ -1,12 +1,8 @@
 import { CategoryType } from "./category";
-import { CommentType } from "./comment";
-import { FavoriteType } from "./favorite";
 import { FileType } from "./file";
 import { ImageType } from "./image";
-import { StepType } from "./step";
-import { ResourceTypeType } from "./resourceTypeType";
 
-export interface ResourceType {
+export interface ArticleType {
     id: number;
     title: string;
     description: string;
@@ -14,15 +10,10 @@ export interface ResourceType {
     nbParticipant: number;
     category: CategoryType;
     categoryId: string
-    typeRessourceId: string
-    typeRessource: ResourceTypeType;
     file: FileType;
     fileId: string
     banner: ImageType;
     bannerId: string;
-    step: StepType[];
-    favorites: FavoriteType[];
-    comment: CommentType[];
     isValidate: boolean;
     status: string;
     fileBytes?: File;
@@ -30,13 +21,13 @@ export interface ResourceType {
     deadLine?: string;
   }
 
-export interface ResourceAddType
+export interface ArticleAddType
  {
-  data: ResourceType,
+  data: ArticleType,
   message: string
  }  
-export interface ResourcesType {
-    data: ResourceType[];
+export interface ArticlesType {
+    data: ArticleType[];
     message: string
     total: number;
   }

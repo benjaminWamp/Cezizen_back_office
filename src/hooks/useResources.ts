@@ -1,6 +1,6 @@
 // src/hooks/useResources.ts
 import { useState } from 'react';
-import { ResourceAddType, ResourcesType, ResourceType } from '../types/resource';
+import { ResourceAddType, ResourcesType, ResourceType } from '../types/article';
 
 interface UseResourcesReturn {
   resources: ResourcesType;

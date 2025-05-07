@@ -1,11 +1,11 @@
 import { z } from "zod";
 
 export const FormSchema = z.object({
-  name: z
+  firstname: z
     .string({
         required_error: "Le nom est requis",
     }),
-  surname: z
+  lastname: z
     .string({
         required_error: "Le prénom est requis",
     }),
@@ -17,8 +17,9 @@ export const FormSchema = z.object({
   password: z
     .string({
         required_error: "Le mot de passe est requis",
-    }),
+    })
+    .optional(),
   roleId: z
-    .string()
+    .number()
     .optional(),
 });

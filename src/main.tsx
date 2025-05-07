@@ -10,7 +10,6 @@ import theme from "./theme.ts";
 import { ClerkProvider } from "@clerk/clerk-react";
 
 const clerkKey = import.meta.env.VITE_PUBLIC_CLERK_PUBLISHABLE_KEY;
-console.log(clerkKey);
 function AppWithLayout() {
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";

@@ -16,7 +16,7 @@ const Navigation = () => {
           <InsertChartIcon />
         </IconButton>
       </NavLink>
-      <NavLink to="/citizens" className={({ isActive }) => (isActive ? "selected" : "")}>
+      <NavLink to="/users" className={({ isActive }) => (isActive ? "selected" : "")}>
         <IconButton size="large" aria-label="Voir les citoyens">
           <GroupIcon />
         </IconButton>
@@ -26,19 +26,9 @@ const Navigation = () => {
           <MilitaryTechIcon />
         </IconButton>
       </NavLink>
-      <NavLink to="/resources" className={({ isActive }) => (isActive ? "selected" : "")}>
+      <NavLink to="/articles" className={({ isActive }) => (isActive ? "selected" : "")}>
         <IconButton size="large" aria-label="Voir les ressources">
           <CategoryIcon />
-        </IconButton>
-      </NavLink>
-      <NavLink to="/resource-types" className={({ isActive }) => (isActive ? "selected" : "")}>
-        <IconButton size="large" aria-label="Voir les types de ressources">
-          <BookmarkIcon />
-        </IconButton>
-      </NavLink>
-      <NavLink to="/comments" className={({ isActive }) => (isActive ? "selected" : "")}>
-        <IconButton size="large" aria-label="Voir les commentaire">
-          <ModeCommentIcon />
         </IconButton>
       </NavLink>
       <NavLink to="/categories" className={({ isActive }) => (isActive ? "selected" : "")}>
