@@ -31,6 +31,11 @@ const Navigation = () => {
           <CategoryIcon />
         </IconButton>
       </NavLink>
+      <NavLink to="/exercises" className={({ isActive }) => (isActive ? "selected" : "")}>
+        <IconButton size="large" aria-label="Voir les exercices">
+          <FolderIcon />
+        </IconButton>
+      </NavLink>
       <NavLink to="/categories" className={({ isActive }) => (isActive ? "selected" : "")}>
         <IconButton size="large" aria-label="Voir les catégories">
           <FolderIcon />

@@ -8,8 +8,8 @@ interface UseUsersReturn {
   error: Error | null;
   fetchUsers: ({ page, perPage }: { page?: number, perPage?: number }) => Promise<void>;
   createUser: (newUser: Omit<UserType, 'id'>) => Promise<void>;
-  updateUser: (id: string, updatedFields: Partial<UserType>) => Promise<void>;
-  deleteUser: (id: string) => Promise<void>;
+  updateUser: (id: number, updatedFields: Partial<UserType>) => Promise<void>;
+  deleteUser: (id: number) => Promise<void>;
   fetchUserActive: (userId: string) => Promise<UserType | null>;
 }
 
@@ -59,7 +59,7 @@ const useUsers = (): UseUsersReturn => {
   };
 
   // Mettre à jour un citoyen
-  const updateUser = async (id: string, updatedFields: Partial<UserType>) => {
+  const updateUser = async (id: number, updatedFields: Partial<UserType>) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/user/${id}`, {
@@ -80,7 +80,7 @@ const useUsers = (): UseUsersReturn => {
   };
 
   // Supprimer un citoyen
-  const deleteUser = async (id: string) => {
+  const deleteUser = async (id: number) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/user/${id}`, {

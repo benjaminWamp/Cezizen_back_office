@@ -1,5 +1,5 @@
 export interface RoleType {
-  name: string;
+  label: string;
   id: string;
 }
 export interface RoleAddType

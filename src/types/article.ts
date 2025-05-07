@@ -4,7 +4,7 @@ import { ImageType } from "./image";
 
 export interface ArticleType {
     id: number;
-    title: string;
+    label: string;
     description: string;
     maxParticipant: number;
     nbParticipant: number;

@@ -93,7 +93,7 @@ const Index = () => {
       validation: {},
       showOn: "always",
       options: roles.data.map((role) => ({
-        label: role.name,
+        label: role.label,
         value: role.id,
       })),
     },
@@ -105,7 +105,7 @@ const Index = () => {
       if (user?.id) {
         try {
           const userActive = await fetchUserActive(user.id);
-          if (userActive?.role?.name === "USER" || userActive?.role?.name === "MODERATOR") {
+          if (userActive?.role?.label === "USER" || userActive?.role?.label === "MODERATOR") {
             window.location.href = "/401";
           }
         } catch (error) {
@@ -136,7 +136,7 @@ const Index = () => {
   }, [debouncedSearch, users]);
 
   const handleRowDoubleClick = (rowData: any) => {
-    setFormData(rowData);
+    setFormData({ ...rowData, roleId: rowData.role.id });
     setOpen(true);
   };
 
@@ -149,7 +149,7 @@ const Index = () => {
     handleCloseModal();
   };
 
-  const handleDeleteClick = (id: string) => {
+  const handleDeleteClick = (id: number) => {
     deleteUser(id);
     handleCloseModal();
   };

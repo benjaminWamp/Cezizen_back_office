@@ -5,13 +5,12 @@ import GridComponent from "../components/Grid";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import { useState } from "react";
-import { ResourceType } from "../types/article";
+import { ArticleType } from "../types/article";
 import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
 import useCategory from "../hooks/useCategory";
-import useResourcesType from "../hooks/useResourceType";
 import { formatISOToDateInput } from "../utils/date";
 import { FormSchema } from "../validation/resourceValidation";
 import useCitizens from "../hooks/useUsers";
@@ -63,48 +62,47 @@ const Index = () => {
 
   const { fetchResources, resources, loading, error, createResource, updateResource, deleteResource, fetchResource, validateResource } = useResources();
   const { fetchCategories, categories } = useCategory();
-  const { fetchResourcesType, resourcesType } = useResourcesType();
   const [page, setPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [count, setCount] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
-  const [resourcesFiltered, setResourcesFiltered] = useState<ResourceType[]>([]);
+  const [resourcesFiltered, setResourcesFiltered] = useState<ArticleType[]>([]);
   const [open, setOpen] = useState<boolean>(false);
   const [formData, setFormData] = useState<GridRowParams | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [banner, setBanner] = useState<File | null>(null);
 
   const ressourceFormConfig: FieldConfig[] = [
-    { name: "title", label: "Titre", type: "text", validation: { required: "Le titre est requis" }, showOn: "always" },
-    { name: "description", label: "Description", type: "textArea", validation: { required: "La description est requise" }, showOn: "always" },
-    { name: "maxParticipant", label: "Max participants", type: "number", validation: { min: { value: 1, message: ">=1" } }, showOn: "always" },
-    { name: "nbParticipant", label: "Participants actuels", type: "number", validation: { min: { value: 0, message: ">=0" } }, showOn: "always" },
-    { name: "deadLine", label: "Date limite", type: "date", validation: {}, showOn: "always" },
-    {
-      name: "categoryId",
-      label: "Catégorie",
-      type: "dropdown",
-      validation: { required: "La catégorie est requise" },
-      showOn: "always",
-      options: categories.data.map((cat) => ({
-        value: cat.id,
-        label: cat.name,
-      })),
-    },
-    { name: "fileId", label: "Fichier", type: "file", validation: {}, showOn: "create" },
-    { name: "bannerId", label: "Bannière", type: "banner", validation: {}, showOn: "create" },
-    { name: "isValidate", label: "Validé ?", type: "checkbox", validation: {}, showOn: "edit" },
-    {
-      name: "typeRessourceId",
-      label: "Type de ressource",
-      type: "dropdown",
-      validation: { required: "Le type est requis" },
-      showOn: "always",
-      options: resourcesType.data.map((type) => ({
-        value: type.id,
-        label: type.name,
-      })),
-    },
+    // { name: "title", label: "Titre", type: "text", validation: { required: "Le titre est requis" }, showOn: "always" },
+    // { name: "description", label: "Description", type: "textArea", validation: { required: "La description est requise" }, showOn: "always" },
+    // { name: "maxParticipant", label: "Max participants", type: "number", validation: { min: { value: 1, message: ">=1" } }, showOn: "always" },
+    // { name: "nbParticipant", label: "Participants actuels", type: "number", validation: { min: { value: 0, message: ">=0" } }, showOn: "always" },
+    // { name: "deadLine", label: "Date limite", type: "date", validation: {}, showOn: "always" },
+    // {
+    //   name: "categoryId",
+    //   label: "Catégorie",
+    //   type: "dropdown",
+    //   validation: { required: "La catégorie est requise" },
+    //   showOn: "always",
+    //   options: categories.data.map((cat) => ({
+    //     value: cat.id,
+    //     label: cat.name,
+    //   })),
+    // },
+    // { name: "fileId", label: "Fichier", type: "file", validation: {}, showOn: "create" },
+    // { name: "bannerId", label: "Bannière", type: "banner", validation: {}, showOn: "create" },
+    // { name: "isValidate", label: "Validé ?", type: "checkbox", validation: {}, showOn: "edit" },
+    // {
+    //   name: "typeRessourceId",
+    //   label: "Type de ressource",
+    //   type: "dropdown",
+    //   validation: { required: "Le type est requis" },
+    //   showOn: "always",
+    //   options: resourcesType.data.map((type) => ({
+    //     value: type.id,
+    //     label: type.name,
+    //   })),
+    // },
   ];
 
   const debouncedSearch = useDebounce(search, 500);
@@ -129,10 +127,6 @@ const Index = () => {
 
   useEffect(() => {
     fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    fetchResourcesType();
   }, []);
 
   useEffect(() => {

@@ -14,15 +14,13 @@ import "@fontsource/fredoka/700.css";
 import { Route, Routes } from "react-router-dom";
 import Index from "./pages";
 import Erreur404 from "./pages/erreur404";
-import Role from "./pages/role";
 import Resource from "./pages/resource";
 import Login from "./pages/login";
 import Category from "./pages/category";
 import StatsPage from "./pages/dashbord";
-import ResourceType from "./pages/resourceType";
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import Erreur401 from "./pages/Error401";
-import Comment from "./pages/comment";
+import Exercise from "./pages/exercise";
 
 function App() {
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -36,10 +34,10 @@ function App() {
       <Routes>
         <Route path="/users" element={<Index />} />
         <Route path="/articles" element={<Resource />} />
-        <Route path="*" element={<Erreur404 />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<StatsPage />} />
         <Route path="/categories" element={<Category />} />
+        <Route path="/exercises" element={<Exercise />} />
         <Route
           path="/"
           element={

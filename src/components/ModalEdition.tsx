@@ -41,12 +41,8 @@ export interface FieldConfig {
   name:
     | "title"
     | "description"
-    | "maxParticipant"
-    | "nbParticipant"
     | "deadLine"
     | "categoryId"
-    | "isValidate"
-    | "typeRessourceId"
     | "firstname"
     | "email"
     | "password"
@@ -54,7 +50,11 @@ export interface FieldConfig {
     | "lastname"
     | "bannerId"
     | "fileId"
-    | "label";
+    | "label"
+    | "inspiration"
+    | "expiration"
+    | "apnea"
+    | "times";
   label: string;
   type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "textArea" | "date" | "checkbox" | "textArea";
   defaultValue?: string | number;
@@ -71,7 +71,7 @@ interface GenericModalProps {
   title: string;
   fields: FieldConfig[];
   onSubmit?: (data: any) => void;
-  onDelete?: (id: string) => void;
+  onDelete?: (id: number) => void;
   initialData?: any;
   TransitionProps?: {
     onExited: () => void;
@@ -242,12 +242,6 @@ const GenericModal: React.FC<GenericModalProps> = ({
                           </Box>
                         )} */}
                         </>
-                      )}
-                      {field.name === "isValidate" && (
-                        <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
-                          <Typography>{field.label}</Typography>
-                          <input type="checkbox" {...register("isValidate")} style={{ marginLeft: "8px" }} />
-                        </Box>
                       )}
                     </Box>
                   );

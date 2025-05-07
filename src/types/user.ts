@@ -3,7 +3,7 @@ import { RoleType } from "./role";
 import { SessionType } from "./session";
 
 export interface UserType {
-    id: string;
+    id: number;
     firstname: string;
     email: string;
     lastname: string;
