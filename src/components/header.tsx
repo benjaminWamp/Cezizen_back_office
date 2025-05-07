@@ -27,10 +27,10 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static" color="default" elevation={1} sx={{ width: "100%", top: 0 }} id="header">
+    <AppBar position="static" color="primary" elevation={1} sx={{ width: "100%", top: 0 }} id="header">
       <Toolbar>
         <Box sx={{ flexGrow: 1, margin: "20px 0px" }}>
-          <img src="/logo.png" alt="Vivactive Logo" style={{ height: 45 }} />
+          <img src="/Logo.svg" alt="Vivactive Logo" style={{ height: 45 }} />
         </Box>
 
         {isSignedIn && (
@@ -41,7 +41,7 @@ const Header = () => {
               sx={{
                 textTransform: "uppercase",
                 borderRadius: 50,
-                backgroundColor: "#00779f",
+                backgroundColor: "#7C9A92",
                 width: 40,
                 height: 40,
                 color: "#fff",

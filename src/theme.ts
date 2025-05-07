@@ -5,8 +5,8 @@ const theme = createTheme(
   {
     palette: {
       mode: "light",
-      primary: { main: "#00949F" },
-      secondary: { main: "#7C93F9" },
+      primary: { main: "#253334" },
+      secondary: { main: "#7C9A92" },
       text: { primary: "#1A1A1A", secondary: "#4B5563" },
     },
     typography: {
@@ -52,8 +52,8 @@ const theme = createTheme(
             borderRadius: 8,
             color: "#ffffff",
             "&:hover": {
-              backgroundColor: "#fff",
-              color: "#00949F",
+              backgroundColor: "#253334",
+              color: "#7C9A92",
             },
           },
         },
