@@ -1,11 +1,13 @@
 import React from "react";
 import { AppBar, Toolbar, IconButton, Box, Menu, MenuItem, Typography } from "@mui/material";
 import { useUser, useClerk } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { user, isSignedIn } = useUser();
   const { signOut } = useClerk();
+  const navigate = useNavigate();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -18,6 +20,8 @@ const Header = () => {
   const handleLogout = async () => {
     handleClose();
     await signOut();
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   const getInitials = () => {

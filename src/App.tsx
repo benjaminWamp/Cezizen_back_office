@@ -21,6 +21,7 @@ import StatsPage from "./pages/dashbord";
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import Erreur401 from "./pages/Error401";
 import Exercise from "./pages/exercise";
+import RequireAuth from "./layout/requireAuth";
 
 function App() {
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -32,23 +33,53 @@ function App() {
   return (
     <div className="app" style={{ height: `calc(100vh - ${headerHeight}px)` }}>
       <Routes>
-        <Route path="/users" element={<Index />} />
-        <Route path="/articles" element={<Resource />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<StatsPage />} />
-        <Route path="/categories" element={<Category />} />
-        <Route path="/exercises" element={<Exercise />} />
         <Route
           path="/"
           element={
-            <>
-              <SignedIn>
-                <Resource />
-              </SignedIn>
-              <SignedOut>
-                <RedirectToSignIn />
-              </SignedOut>
-            </>
+            <RequireAuth>
+              <Index />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <RequireAuth>
+              <Index />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/articles"
+          element={
+            <RequireAuth>
+              <Resource />
+            </RequireAuth>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/dashboard"
+          element={
+            <RequireAuth>
+              <StatsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/categories"
+          element={
+            <RequireAuth>
+              <Category />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/exercises"
+          element={
+            <RequireAuth>
+              <Exercise />
+            </RequireAuth>
           }
         />
         <Route path="*" element={<Erreur404 />} />
