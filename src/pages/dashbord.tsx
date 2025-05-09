@@ -4,18 +4,20 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recha
 import { useUser } from "@clerk/clerk-react";
 
 import useUsers from "../hooks/useUsers";
-import useResources from "../hooks/useResources";
+import useArticles from "../hooks/useArticles";
+import useExercises from "../hooks/useExercise";
 
 interface StatsData {
   usersCount: number;
-  resourcesCount: number;
+  articlesCount: number;
 }
 
-const COLORS = ["#8884d8", "#82ca9d"];
+const COLORS = ["#8884d8", "#82ca9d", "#ffc658"];
 
 const StatsPage: React.FC = () => {
   const { fetchUsers, users, fetchUserActive } = useUsers();
-  const { fetchResources, resources } = useResources();
+  const { fetchArticles, articles } = useArticles();
+  const { fetchExercises, exercises } = useExercises();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useUser();
@@ -40,15 +42,16 @@ const StatsPage: React.FC = () => {
 
   useEffect(() => {
     // on récupère seulement les totaux
-    Promise.all([fetchUsers({ page: 1, perPage: 1 }), fetchResources({ page: 1, perPage: 1 })])
+    Promise.all([fetchUsers({ page: 1, perPage: 1 }), fetchArticles({ page: 1, perPage: 1 }), fetchExercises()])
       .catch((err) => setError(err.message || "Erreur réseau"))
       .finally(() => setLoading(false));
-  }, [fetchUsers, fetchResources]);
+  }, [fetchUsers, fetchArticles]);
 
   // Prépare les données pour le camembert
   const pieData = [
     { name: "Citoyens", value: users.total },
-    { name: "Ressources", value: resources.total },
+    { name: "Articles", value: articles.total },
+    { name: "Exercices", value: exercises.total },
   ];
 
   // Fonction d'export CSV
@@ -97,8 +100,16 @@ const StatsPage: React.FC = () => {
         <Grid component="div">
           <Card>
             <CardContent>
-              <Typography>Nombre total de ressources</Typography>
-              <Typography>{resources.total}</Typography>
+              <Typography>Nombre total d'articles</Typography>
+              <Typography>{articles.total}</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid component="div">
+          <Card>
+            <CardContent>
+              <Typography>Nombre total d'exercices</Typography>
+              <Typography>{exercises.total}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -106,7 +117,7 @@ const StatsPage: React.FC = () => {
         <Grid component="div">
           <Card>
             <CardContent>
-              <Typography gutterBottom>Répartition Citoyens vs Ressources</Typography>
+              <Typography gutterBottom>Répartition Citoyens vs Articles vs Exercises </Typography>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>

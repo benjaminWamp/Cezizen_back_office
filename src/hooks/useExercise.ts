@@ -18,7 +18,8 @@ const useExercises = (): UseExercisesReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const [exercises, setExercises] = useState<ExercisesType>({
     data: [],
-  message: ''});
+  message: '',
+total: 0});
     const [exercise, setExercise] = useState<ExerciseType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -26,9 +27,7 @@ const useExercises = (): UseExercisesReturn => {
   const fetchExercises = async () => {    
     setLoading(true);
     setError(null);
-    try {
-      console.log("COUCOU");
-      
+    try {      
       const res = await fetch(`${baseUrl}/exercise`);
       if (!res.ok) throw new Error(`Erreur lors du chargement : ${res.status}`);
       console.log("🚧 -> :32 -> fetchExercises -> res 🚧", res);
@@ -69,7 +68,7 @@ const useExercises = (): UseExercisesReturn => {
       });
       if (!res.ok) throw new Error(`Erreur lors de la création : ${res.status}`);
       const createdExercise: ExerciseAddType = await res.json();
-      setExercises((prev) => ({data: [...prev.data, createdExercise.data], message: createdExercise.message}));
+      setExercises((prev) => ({data: [...prev.data, createdExercise.data], message: createdExercise.message , total: prev.total + 1}));
       return createdExercise.data;
     } catch (err: any) {
       setError(err);
@@ -88,7 +87,7 @@ const useExercises = (): UseExercisesReturn => {
       });
       if (!res.ok) throw new Error(`Erreur lors de la mise à jour : ${res.status}`);
       const updatedExercise: ExerciseAddType = await res.json();
-      setExercises((prev) => ({data: prev.data.map((exercise) => (exercise.id === id ? updatedExercise.data : exercise)), message: updatedExercise.message}));
+      setExercises((prev) => ({data: prev.data.map((exercise) => (exercise.id === id ? updatedExercise.data : exercise)), message: updatedExercise.message, total: prev.total}));
       return updatedExercise.data;
     } catch (err: any) {
       setError(err);
@@ -105,7 +104,7 @@ const useExercises = (): UseExercisesReturn => {
       });
       if (!res.ok) throw new Error(`Erreur lors de la suppression : ${res.status}`);
       const messageDeletedExercise : Omit<ExerciseAddType, 'data'> = await res.json();
-      setExercises((prev) => ({data: prev.data.filter((exercise) => exercise.id !== id), message: messageDeletedExercise.message}));
+      setExercises((prev) => ({data: prev.data.filter((exercise) => exercise.id !== id), message: messageDeletedExercise.message, total: prev.total - 1}));
     } catch (err: any) {
       setError(err);
     }

@@ -67,7 +67,7 @@ const Index = () => {
       if (user?.id) {
         try {
           const userActive = await fetchUserActive(user.id);
-          if (userActive?.role?.label === "USER") {
+          if (userActive?.role?.name === "USER") {
             window.location.href = "/401";
           }
         } catch (error) {
@@ -128,7 +128,7 @@ const Index = () => {
       {error && <ErrorComponent errorMessage={error?.message} />}
       {!loading && !error && (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-          <HeaderGrid title="Liste des ressources" onAddClick={() => setOpen(true)} searchValue={search} onSearchChange={setSearch} />
+          <HeaderGrid title="Liste des exercices" onAddClick={() => setOpen(true)} searchValue={search} onSearchChange={setSearch} />
           <GridComponent
             rows={exercisesFiltered}
             columns={columns}
@@ -143,7 +143,7 @@ const Index = () => {
             open={open}
             FormSchema={FormSchema}
             onClose={() => handleCloseModal()}
-            title={formData ? "Modifier une ressource" : "Créer une ressource"}
+            title={formData ? "Modifier un exercices" : "Créer un exercices"}
             fields={ressourceFormConfig}
             onSubmit={(data) => handleSubmitClick(data)}
             initialData={formData}

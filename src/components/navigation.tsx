@@ -1,12 +1,11 @@
 import CategoryIcon from "@mui/icons-material/Category";
 import IconButton from "@mui/material/IconButton";
-import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import InsertChartIcon from "@mui/icons-material/InsertChart";
 import GroupIcon from "@mui/icons-material/Group";
 import { NavLink } from "react-router-dom";
 import FolderIcon from "@mui/icons-material/Folder";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
 import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 
 const Navigation = () => {
   return (
@@ -33,7 +32,7 @@ const Navigation = () => {
       </NavLink>
       <NavLink to="/exercises" className={({ isActive }) => (isActive ? "selected" : "")}>
         <IconButton size="large" aria-label="Voir les exercices">
-          <FolderIcon />
+          <MenuBookIcon />
         </IconButton>
       </NavLink>
       <NavLink to="/categories" className={({ isActive }) => (isActive ? "selected" : "")}>

@@ -1,5 +1,5 @@
-import useResources from "../hooks/useResources";
-import { useEffect } from "react";
+import useArticles from "../hooks/useArticles";
+import { use, useEffect } from "react";
 import { Box, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
 import GridComponent from "../components/Grid";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
@@ -12,97 +12,85 @@ import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
 import useCategory from "../hooks/useCategory";
 import { formatISOToDateInput } from "../utils/date";
-import { FormSchema } from "../validation/resourceValidation";
+import { FormSchema } from "../validation/articleValidation";
 import useCitizens from "../hooks/useUsers";
 import { useUser } from "@clerk/clerk-react";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
-  { field: "title", headerName: "Titre", width: 130 },
-  { field: "description", headerName: "Description", width: 130 },
+  { field: "label", headerName: "Titre", width: 130 },
+  { field: "description", headerName: "Description", width: 300 },
   {
-    field: "maxParticipant",
-    headerName: "Nombre max de participants",
-    width: 250,
-  },
-  {
-    field: "deadLine",
-    headerName: "Date limite",
-    width: 160,
-    valueGetter: (value: Date) => `${new Date(value).toLocaleDateString("fr-FR")}`,
+    field: "content",
+    headerName: "Contenu",
+    width: 1000,
   },
   {
     field: "category",
     headerName: "Categorie",
     width: 160,
-    valueGetter: (value: { name: string }) => `${value.name}`,
+    valueGetter: (value: { label: string }) => `${value.label}`,
   },
   {
-    field: "isValidate",
-    headerName: "Validé ?",
+    field: "user",
+    headerName: "Auteur",
     width: 160,
-    valueGetter: (value: boolean) => `${value ? "Oui" : "Non"}`,
+    valueGetter: (value: { firstname: string; lastname: string }) => `${value && value.firstname && value.lastname ? value.firstname + value.lastname : "--"}`,
   },
   {
-    field: "status",
-    headerName: "Statut",
-    width: 160,
-  },
-  {
-    field: "typeRessource",
-    headerName: "Type de ressource",
-    width: 160,
-    valueGetter: (value: { name: string }) => `${value.name}`,
+    field: "articleImages",
+    headerName: "Image",
+    width: 200,
+    valueGetter: (params: any) => {
+      return params && params.length > 0 ? params[0].path.slice(24) : "";
+    },
   },
 ];
 
 const Index = () => {
-  const { fetchCitizenActive } = useCitizens();
+  const { fetchUserActive } = useCitizens();
   const { user } = useUser();
 
-  const { fetchResources, resources, loading, error, createResource, updateResource, deleteResource, fetchResource, validateResource } = useResources();
+  const { fetchArticles, articles, loading, error, createArticle, updateArticle, deleteArticle, fetchArticle, updateArticleImage, removeArticleImage } =
+    useArticles();
+  const { fetchUsers, users } = useCitizens();
   const { fetchCategories, categories } = useCategory();
   const [page, setPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [count, setCount] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
-  const [resourcesFiltered, setResourcesFiltered] = useState<ArticleType[]>([]);
+  const [articlesFiltered, setArticlesFiltered] = useState<ArticleType[]>([]);
   const [open, setOpen] = useState<boolean>(false);
   const [formData, setFormData] = useState<GridRowParams | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [banner, setBanner] = useState<File | null>(null);
+  const [deleteImage, setDeleteImage] = useState<boolean>(false);
 
-  const ressourceFormConfig: FieldConfig[] = [
-    // { name: "title", label: "Titre", type: "text", validation: { required: "Le titre est requis" }, showOn: "always" },
-    // { name: "description", label: "Description", type: "textArea", validation: { required: "La description est requise" }, showOn: "always" },
-    // { name: "maxParticipant", label: "Max participants", type: "number", validation: { min: { value: 1, message: ">=1" } }, showOn: "always" },
-    // { name: "nbParticipant", label: "Participants actuels", type: "number", validation: { min: { value: 0, message: ">=0" } }, showOn: "always" },
-    // { name: "deadLine", label: "Date limite", type: "date", validation: {}, showOn: "always" },
-    // {
-    //   name: "categoryId",
-    //   label: "Catégorie",
-    //   type: "dropdown",
-    //   validation: { required: "La catégorie est requise" },
-    //   showOn: "always",
-    //   options: categories.data.map((cat) => ({
-    //     value: cat.id,
-    //     label: cat.name,
-    //   })),
-    // },
-    // { name: "fileId", label: "Fichier", type: "file", validation: {}, showOn: "create" },
-    // { name: "bannerId", label: "Bannière", type: "banner", validation: {}, showOn: "create" },
-    // { name: "isValidate", label: "Validé ?", type: "checkbox", validation: {}, showOn: "edit" },
-    // {
-    //   name: "typeRessourceId",
-    //   label: "Type de ressource",
-    //   type: "dropdown",
-    //   validation: { required: "Le type est requis" },
-    //   showOn: "always",
-    //   options: resourcesType.data.map((type) => ({
-    //     value: type.id,
-    //     label: type.name,
-    //   })),
-    // },
+  const articleFormConfig: FieldConfig[] = [
+    { name: "label", label: "Titre", type: "text", showOn: "always" },
+    { name: "description", label: "Description", type: "textArea", showOn: "always" },
+    { name: "content", label: "Contenue", type: "textArea", showOn: "always" },
+    {
+      name: "userId",
+      label: "Auteur",
+      type: "dropdown",
+      showOn: "always",
+      options: users.data.map((user) => ({
+        label: `${user.firstname} ${user.lastname}`,
+        value: user.id,
+      })),
+    },
+    {
+      name: "categoryId",
+      label: "Catégorie",
+      type: "dropdown",
+      validation: { required: "La catégorie est requise" },
+      showOn: "always",
+      options: categories.data.map((cat) => ({
+        value: cat.id,
+        label: cat.label,
+      })),
+    },
+    { name: "images", label: "Image", type: "image", showOn: "always" },
   ];
 
   const debouncedSearch = useDebounce(search, 500);
@@ -112,12 +100,12 @@ const Index = () => {
     const fetchUserRole = async () => {
       if (user?.id) {
         try {
-          const citizen = await fetchCitizenActive(user.id);
-          if (citizen?.role?.name === "USER") {
+          const userActive = await fetchUserActive(user.id);
+          if (userActive?.role?.name === "USER") {
             window.location.href = "/401";
           }
         } catch (error) {
-          console.error("Erreur lors de la récupération du citoyen actif :", error);
+          console.error("Erreur lors de la récupération de l'utilisateur actif :", error);
         }
       }
     };
@@ -126,62 +114,71 @@ const Index = () => {
   }, [user]);
 
   useEffect(() => {
+    fetchUsers({ page: 1, perPage: 100 });
+  }, []);
+
+  useEffect(() => {
     fetchCategories();
   }, []);
 
   useEffect(() => {
-    fetchResources({ page: page, perPage: perPage });
+    fetchArticles({ page: page, perPage: perPage });
   }, [perPage, page]);
 
   useEffect(() => {
-    const totalCount = Math.ceil(resources.total / perPage);
+    const totalCount = Math.ceil(articles.total / perPage);
     setCount(totalCount);
-  }, [perPage, resources]);
+  }, [perPage, articles]);
 
   useEffect(() => {
-    const filtered = resources.data.filter((c) => `${c.title} ${c.description}`.toLowerCase().includes(debouncedSearch.trim().toLowerCase()));
+    const filtered = articles.data.filter((c: ArticleType) =>
+      `${c.label} ${c.description} ${c.content}`.toLowerCase().includes(debouncedSearch.trim().toLowerCase())
+    );
 
-    setResourcesFiltered(filtered);
-  }, [debouncedSearch, resources]);
+    setArticlesFiltered(filtered);
+  }, [debouncedSearch, articles]);
 
   const handleRowDoubleClick = async (rowData: any) => {
-    await fetchResource(rowData.id).then((resource) => {
+    await fetchArticle(rowData.id).then((article: ArticleType) => {
       setFormData({
         ...rowData,
         row: {
-          ...resource,
-          deadLine: resource?.deadLine && formatISOToDateInput(resource.deadLine),
-          categoryId: resource.category.id,
-          typeRessourceId: resource.typeRessource.id,
+          ...article,
+          categoryId: article.category.id,
+          userId: article.user?.id ?? null,
         },
       });
     });
     setOpen(true);
   };
 
-  const handleSubmitClick = (data: ResourceType) => {
+  const handleSubmitClick = (data: ArticleType) => {
     if (data.id) {
-      const { step, ...rest } = data;
-      if (data.isValidate) validateResource(data.id.toString());
-      updateResource(data.id.toString(), {
-        ...rest,
-        nbParticipant: rest.nbParticipant && Number(rest.nbParticipant),
-        maxParticipant: rest.maxParticipant && Number(rest.maxParticipant),
-        deadLine: rest.deadLine && new Date(rest.deadLine).toISOString(),
+      const { ...rest } = data;
+      updateArticle(data.id, rest).then((article: ArticleType) => {
+        if (file) {
+          updateArticleImage(article.id, file);
+          setFile(null);
+        } else if (deleteImage && formData && formData.row.articleImages.length > 0) {
+          removeArticleImage(article.id, formData.row.articleImages[0].id);
+          setFile(null);
+        }
       });
     } else {
-      createResource({
+      createArticle({
         ...data,
-        nbParticipant: Number(data.nbParticipant),
-        maxParticipant: Number(data.maxParticipant),
-        deadLine: data.deadLine ? new Date(data.deadLine).toISOString() : new Date().toISOString(),
+      }).then((article: ArticleType) => {
+        if (file) {
+          updateArticleImage(article.id, file);
+          setFile(null);
+        }
       });
     }
     handleCloseModal();
   };
 
-  const handleDeleteClick = (id: string) => {
-    deleteResource(id);
+  const handleDeleteClick = (id: number) => {
+    deleteArticle(id);
     handleCloseModal();
   };
 
@@ -189,12 +186,13 @@ const Index = () => {
     setOpen(false);
   };
 
-  const handleFileChange = (data: File) => {
+  const handleImageChange = (data: File) => {
     setFile(data);
   };
 
-  const handleBannerChange = (data: File) => {
-    setBanner(banner);
+  const handlerDeleteImage = (isDeleteImage: boolean) => {
+    setFile(null);
+    setDeleteImage(isDeleteImage);
   };
 
   return (
@@ -202,9 +200,9 @@ const Index = () => {
       {error && <ErrorComponent errorMessage={error?.message} />}
       {!loading && !error && (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-          <HeaderGrid title="Liste des ressources" onAddClick={() => setOpen(true)} searchValue={search} onSearchChange={setSearch} />
+          <HeaderGrid title="Liste des articles" onAddClick={() => setOpen(true)} searchValue={search} onSearchChange={setSearch} />
           <GridComponent
-            rows={resourcesFiltered}
+            rows={articlesFiltered}
             columns={columns}
             loading={loading}
             hideFooter={true}
@@ -258,17 +256,17 @@ const Index = () => {
             open={open}
             FormSchema={FormSchema}
             onClose={() => handleCloseModal()}
-            title={formData ? "Modifier une ressource" : "Créer une ressource"}
-            fields={ressourceFormConfig}
+            title={formData ? "Modifier un article" : "Créer un article"}
+            fields={articleFormConfig}
             onSubmit={(data) => handleSubmitClick(data)}
             initialData={formData}
             TransitionProps={{ onExited: () => setFormData(null) }}
             onDelete={(id) => {
               handleDeleteClick(id);
             }}
-            onSubmitFile={(data) => handleFileChange(data)}
-            onSubmitBanner={(data) => handleBannerChange(data)}
-            interfaceActive="resource"
+            onSubmitImage={(data) => handleImageChange(data)}
+            interfaceActive="article"
+            onDeleteImage={(isDeleteImage: boolean) => handlerDeleteImage(isDeleteImage)}
           />
         </Box>
       )}

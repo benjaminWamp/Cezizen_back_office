@@ -93,7 +93,7 @@ const Index = () => {
       validation: {},
       showOn: "always",
       options: roles.data.map((role) => ({
-        label: role.label,
+        label: role.name,
         value: role.id,
       })),
     },
@@ -105,7 +105,7 @@ const Index = () => {
       if (user?.id) {
         try {
           const userActive = await fetchUserActive(user.id);
-          if (userActive?.role?.label === "USER" || userActive?.role?.label === "MODERATOR") {
+          if (userActive?.role?.name === "USER" || userActive?.role?.name === "MODERATOR") {
             window.location.href = "/401";
           }
         } catch (error) {

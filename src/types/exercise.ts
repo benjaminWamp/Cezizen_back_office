@@ -20,4 +20,5 @@ export interface ExerciseAddType
 export interface ExercisesType {
     data: ExerciseType[];
     message: string
+    total: number;
   }

@@ -1,24 +1,19 @@
 import { CategoryType } from "./category";
-import { FileType } from "./file";
 import { ImageType } from "./image";
+import { UserType } from "./user";
 
 export interface ArticleType {
     id: number;
     label: string;
     description: string;
-    maxParticipant: number;
-    nbParticipant: number;
+    content: string;
     category: CategoryType;
     categoryId: string
-    file: FileType;
-    fileId: string
-    banner: ImageType;
-    bannerId: string;
-    isValidate: boolean;
-    status: string;
-    fileBytes?: File;
-    bannerBytes?: File;
-    deadLine?: string;
+    user: UserType;
+    userId: number;
+    createdAt: string;
+    updatedAt: string;
+    articleImages: ImageType[];
   }
 
 export interface ArticleAddType

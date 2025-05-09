@@ -21,6 +21,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { ImageType } from "../types/image";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -54,9 +55,12 @@ export interface FieldConfig {
     | "inspiration"
     | "expiration"
     | "apnea"
-    | "times";
+    | "times"
+    | "content"
+    | "userId"
+    | "images";
   label: string;
-  type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "textArea" | "date" | "checkbox" | "textArea";
+  type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "textArea" | "date" | "checkbox" | "textArea" | "image";
   defaultValue?: string | number;
   validation?: Record<string, any>;
   showOn: "create" | "edit" | "always";
@@ -76,10 +80,10 @@ interface GenericModalProps {
   TransitionProps?: {
     onExited: () => void;
   };
-  onSubmitFile?: (file: File) => void;
-  onSubmitBanner?: (file: File) => void;
+  onSubmitImage?: (file: File) => void;
   interfaceActive?: string;
   FormSchema: z.ZodType<any, any>;
+  onDeleteImage?: (isDeleteImage: boolean) => void;
 }
 
 const GenericModal: React.FC<GenericModalProps> = ({
@@ -91,9 +95,9 @@ const GenericModal: React.FC<GenericModalProps> = ({
   initialData,
   onDelete,
   TransitionProps,
-  onSubmitFile,
-  onSubmitBanner,
+  onSubmitImage,
   FormSchema,
+  onDeleteImage,
   interfaceActive,
 }) => {
   const isEdit = Boolean(initialData);
@@ -113,10 +117,19 @@ const GenericModal: React.FC<GenericModalProps> = ({
 
   // Show/hide password state
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
+  const [selectedFile, setSelectedFile] = useState<ImageType | File | null>(null);
 
   useEffect(() => {
     // Reset du formulaire avec initialData
-    reset(initialData?.row || {});
+    if (open) {
+      initialData?.row.articleImages && initialData?.row.articleImages.length > 0 && setSelectedFile(initialData?.row.articleImages[0]);
+      if (initialData) reset(initialData?.row || {});
+    } else {
+      setSelectedFile(null);
+      reset({});
+    }
+
+    console.log("initialData", initialData);
 
     // Initialisation de l'état showPassword à false pour tous les champs password
     const initVisibility: Record<string, boolean> = {};
@@ -135,6 +148,10 @@ const GenericModal: React.FC<GenericModalProps> = ({
 
   const handlePatch = (data: any) => {
     const payload: Record<string, any> = initialData.row.clerkId ? { id: initialData?.id, clerkId: initialData.row.clerkId } : { id: initialData?.id };
+    console.log("payload", payload);
+    console.log("dirtyFields", dirtyFields);
+    console.log("data", data);
+
     Object.keys({ ...dirtyFields }).forEach((key) => {
       payload[key] = data[key];
     });
@@ -164,9 +181,11 @@ const GenericModal: React.FC<GenericModalProps> = ({
                 name={field.name as unknown as string}
                 control={control}
                 defaultValue={
-                  field.type === "dropdown"
+                  field.type === "image"
+                    ? null
+                    : field.type === "dropdown"
                     ? typeof initialData?.row?.[field.name] === "object"
-                      ? (initialData.row[field.name] as any).id
+                      ? (initialData.row[field.name] as any)?.id ?? ""
                       : initialData?.row?.[field.name] ?? ""
                     : field.defaultValue ?? ""
                 }
@@ -175,7 +194,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
                   const displayValue = field.dataFormat && rawValue != null ? field.dataFormat(rawValue) : rawValue;
                   return (
                     <Box sx={{ display: "flex", alignItems: "center", width: "100%", mt: 2 }}>
-                      {field.type !== "file" && field.type !== "banner" && field.type !== "checkbox" && (
+                      {field.type !== "image" && field.type !== "checkbox" && (
                         <TextField
                           {...ctrl}
                           label={field.label}
@@ -210,38 +229,53 @@ const GenericModal: React.FC<GenericModalProps> = ({
                             ))}
                         </TextField>
                       )}
-                      {(field.type === "file" || field.type === "banner") && (
-                        <>
+                      {field.type === "image" && (
+                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-evenly", width: "100%" }}>
                           <Button component="label" role={undefined} variant="contained" tabIndex={-1} startIcon={<CloudUploadIcon />}>
                             {field.label}
                             <VisuallyHiddenInput
-                              name={ctrl.name}
-                              ref={ctrl.ref}
-                              onBlur={ctrl.onBlur}
                               type="file"
+                              accept="image/*"
                               onChange={(event) => {
-                                const file = event.target.files?.[0] ?? null;
-                                ctrl.onChange(file);
-                                if (onSubmitBanner && onSubmitFile && event.target.files && event.target.files.length > 0) {
-                                  if (field.type === "banner") {
-                                    onSubmitBanner(event.target.files[0]);
-                                  } else {
-                                    onSubmitFile(event.target.files[0]);
+                                const file = event.target.files?.[0];
+                                if (file) {
+                                  setSelectedFile(file);
+                                  if (onSubmitImage) {
+                                    onSubmitImage(file);
                                   }
                                 }
                               }}
                             />
                           </Button>
-                          {/* {ctrl.value && (
-                          <Box sx={{ ml: 2 }}>
-                            {field.type === "banner" ? (
-                              <img src={URL.createObjectURL(ctrl.value)} alt="Banner" style={{ width: "100px", height: "100px" }} />
-                            ) : (
-                              <span>{ctrl.value.name}</span>
-                            )}
-                          </Box>
-                        )} */}
-                        </>
+
+                          {selectedFile && (
+                            <Box sx={{ mt: 2 }}>
+                              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                <Typography variant="body2">📄 {selectedFile instanceof File ? selectedFile.name : "Image preview"}</Typography>
+                                <IconButton
+                                  size="small"
+                                  onClick={() => {
+                                    setSelectedFile(null);
+                                    if (onDeleteImage) onDeleteImage(initialData?.row.id);
+                                  }}
+                                >
+                                  <DeleteIcon fontSize="small" sx={{ color: "red" }} />
+                                </IconButton>
+                              </Box>
+                              <img
+                                src={
+                                  selectedFile
+                                    ? selectedFile instanceof File
+                                      ? URL.createObjectURL(selectedFile)
+                                      : `http://localhost:3000${selectedFile.path}`
+                                    : ""
+                                }
+                                alt="Aperçu"
+                                style={{ width: 150, marginTop: 8, borderRadius: 8 }}
+                              />
+                            </Box>
+                          )}
+                        </Box>
                       )}
                     </Box>
                   );
