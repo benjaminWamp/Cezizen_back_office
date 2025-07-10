@@ -8,8 +8,8 @@ interface UseCategoriesReturn {
   error: Error | null;
   fetchCategories: () => Promise<void>;
   createCategory: (newCategory: Omit<CategoryType, 'id'>) => Promise<void>;
-  updateCategory: (id: string, updatedFields: Partial<CategoryType>) => Promise<void>;
-  deleteCategory: (id: string) => Promise<void>;
+  updateCategory: (id: number, updatedFields: Partial<CategoryType>) => Promise<void>;
+  deleteCategory: (id: number) => Promise<void>;
 }
 
 const useCategory = (): UseCategoriesReturn => {
@@ -62,7 +62,7 @@ const useCategory = (): UseCategoriesReturn => {
   };
 
   // Mettre à jour une catégorie
-  const updateCategory = async (id: string, updatedFields: Partial<CategoryType>) => {
+  const updateCategory = async (id: number, updatedFields: Partial<CategoryType>) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/category/${id}`, {
@@ -83,7 +83,7 @@ const useCategory = (): UseCategoriesReturn => {
   };
 
   // Supprimer une catégorie
-  const deleteCategory = async (id: string) => {
+  const deleteCategory = async (id: number) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/category/${id}`, {

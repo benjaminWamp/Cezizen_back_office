@@ -1,7 +1,7 @@
 import { ArticleType } from "./article";
 
 export interface CategoryType {
-    id:  string  
+    id:  number  
     label: string
     ressources: ArticleType[]
 }

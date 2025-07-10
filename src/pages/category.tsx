@@ -65,7 +65,7 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    const filtered = categories.data.filter((c) => `${c.name}`.toLowerCase().includes(debouncedSearch.trim().toLowerCase()));
+    const filtered = categories.data.filter((c) => `${c.label}`.toLowerCase().includes(debouncedSearch.trim().toLowerCase()));
     setCategoriesFiltered(filtered);
   }, [debouncedSearch, categories]);
 
@@ -83,7 +83,7 @@ const Index = () => {
     handleCloseModal();
   };
 
-  const handleDeleteClick = (id: string) => {
+  const handleDeleteClick = (id: number) => {
     deleteCategory(id);
     handleCloseModal();
   };

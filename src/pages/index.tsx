@@ -27,7 +27,7 @@ const columns: GridColDef[] = [
     headerName: "Nom complet",
     sortable: false,
     width: 160,
-    valueGetter: (value, row) => `${row.lastname || ""} ${row.firstname || ""}`,
+    valueGetter: (_value, row) => `${row.lastname || ""} ${row.firstname || ""}`,
   },
   {
     field: "role",
