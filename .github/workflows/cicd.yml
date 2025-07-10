@@ -1,0 +1,94 @@
+name: 🚀 Build and deploy
+run-name: ${{ github.actor }} is deploying with GitHub Actions 🚀
+on:
+  push:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Lancement des étapes de lint"
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: echo "Le code du dépôt a été cloné sur le serveur d'exécution."
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
+      - run: npm ci
+      - run: npm run lint
+      - run: echo "🏁 Étapes de lint terminées"
+
+  build:
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
+
+      - run: echo "Lancement des étapes de construction"
+      - run: npm ci
+      - run: npm run build
+
+      - name: Save cache (node_modules)
+        uses: actions/cache/save@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
+
+      - run: echo "🏁 Étapes de construction terminées"
+
+
+  build-push-docker :
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'recette')
+    permissions:
+      contents: read
+      packages: write
+    env: 
+      VITE_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_PUBLIC_CLERK_PUBLISHABLE_KEY}}
+    needs:
+    - build
+    steps:
+    - uses: actions/checkout@v4
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{github.actor}}
+        password: ${{secrets.GITHUB_TOKEN}}
+    - name: Build and push docker
+      uses: docker/build-push-action@v6
+      with: 
+        context: .
+        push: true
+        target: web
+        tags: ghcr.io/cda-24-a/vivactive_back_office/vivactive_back_office:recette
+
+  deploy-docker-on-recette:
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'recette')
+    environment:
+      name: recette
+      url: ec2-184-73-222-153.compute-1.amazonaws.com
+    needs:
+      - build-push-docker
+    steps:
+      - uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script: |
+            cd recette
+            sudo docker compose -f docker-compose.global.yml pull
+            sudo docker compose -f docker-compose.global.yml up -d
