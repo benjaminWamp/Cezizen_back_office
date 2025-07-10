@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
 
-export const useAuthRedirect = (p0: (roleName: any) => void) => {
+export const useAuthRedirect = () => {
   const { isSignedIn, isLoaded } = useUser();
  
 

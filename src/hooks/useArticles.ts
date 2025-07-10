@@ -142,7 +142,6 @@ const useArticles = (): UseArticlesReturn => {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error(`Erreur lors de la suppression de l'image : ${res.status}`);
-      const result = await res.json(); 
 
       setArticle((prev) => {
         if (!prev || prev.id !== articleId) return prev;

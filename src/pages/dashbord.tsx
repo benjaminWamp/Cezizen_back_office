@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Box, Grid, Card, CardContent, Typography, Button, CircularProgress } from "@mui/material";
+import React, { useEffect } from "react";
+import { Box, Grid, Card, CardContent, Typography, Button } from "@mui/material";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { useUser } from "@clerk/clerk-react";
 
@@ -7,19 +7,12 @@ import useUsers from "../hooks/useUsers";
 import useArticles from "../hooks/useArticles";
 import useExercises from "../hooks/useExercise";
 
-interface StatsData {
-  usersCount: number;
-  articlesCount: number;
-}
-
 const COLORS = ["#8884d8", "#82ca9d", "#ffc658"];
 
 const StatsPage: React.FC = () => {
   const { fetchUsers, users, fetchUserActive } = useUsers();
   const { fetchArticles, articles } = useArticles();
   const { fetchExercises, exercises } = useExercises();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { user } = useUser();
 
   // Récupération du rôle utilisateur et log si USER
@@ -42,9 +35,7 @@ const StatsPage: React.FC = () => {
 
   useEffect(() => {
     // on récupère seulement les totaux
-    Promise.all([fetchUsers({ page: 1, perPage: 1 }), fetchArticles({ page: 1, perPage: 1 }), fetchExercises()])
-      .catch((err) => setError(err.message || "Erreur réseau"))
-      .finally(() => setLoading(false));
+    Promise.all([fetchUsers({ page: 1, perPage: 1 }), fetchArticles({ page: 1, perPage: 1 }), fetchExercises()]);
   }, [fetchUsers, fetchArticles]);
 
   // Prépare les données pour le camembert

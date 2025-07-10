@@ -1,22 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { styled } from "@mui/material/styles";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  IconButton,
-  InputAdornment,
-  Select,
-  MenuItem,
-  InputLabel,
-  Typography,
-  Divider,
-} from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, IconButton, InputAdornment, MenuItem, Typography } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -98,7 +83,6 @@ const GenericModal: React.FC<GenericModalProps> = ({
   onSubmitImage,
   FormSchema,
   onDeleteImage,
-  interfaceActive,
 }) => {
   const isEdit = Boolean(initialData);
 
@@ -108,8 +92,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
     handleSubmit,
     control,
     reset,
-    register,
-    formState: { dirtyFields, errors },
+    formState: { dirtyFields },
   } = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: initialData?.row ? initialData.row : {},
@@ -122,7 +105,6 @@ const GenericModal: React.FC<GenericModalProps> = ({
   useEffect(() => {
     // Reset du formulaire avec initialData
     if (open) {
-      initialData?.row.articleImages && initialData?.row.articleImages.length > 0 && setSelectedFile(initialData?.row.articleImages[0]);
       if (initialData) reset(initialData?.row || {});
     } else {
       setSelectedFile(null);

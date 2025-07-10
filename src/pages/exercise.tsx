@@ -1,17 +1,14 @@
 import useExercises from "../hooks/useExercise";
 import { useEffect } from "react";
-import { Box, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import GridComponent from "../components/Grid";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
-import Button from "@mui/material/Button";
 import { useState } from "react";
 import { ExerciseType } from "../types/exercise";
 import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
-import useCategory from "../hooks/useCategory";
-import { formatISOToDateInput } from "../utils/date";
 import { FormSchema } from "../validation/exerciseValidation";
 import useUsers from "../hooks/useUsers";
 import { useUser } from "@clerk/clerk-react";

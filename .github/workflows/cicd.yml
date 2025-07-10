@@ -21,6 +21,18 @@ jobs:
       - run: npm run lint
       - run: echo "🏁 Étapes de lint terminées"
 
+  audit: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Appliquer npm audit fix
+        run: |
+            echo "🔧 Lancement de npm audit fix..."
+            npm audit fix
+            echo "✅ npm audit fix terminé."
+
   build:
     runs-on: ubuntu-latest
     needs:
