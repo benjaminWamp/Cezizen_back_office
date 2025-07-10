@@ -92,7 +92,7 @@ jobs:
         context: .
         push: true
         target: web
-        tags: ghcr.io/cda-24-a/vivactive_back_office/vivactive_back_office:recette
+        tags: ghcr.io/benjaminWamp/cezizen_back_office/cezizen_back_office:recette
 
   deploy-docker-on-recette:
     runs-on: ubuntu-latest
