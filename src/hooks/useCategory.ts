@@ -14,6 +14,8 @@ interface UseCategoriesReturn {
 
 const useCategory = (): UseCategoriesReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
+  console.log("🚧 -> useCategory -> baseUrl 🚧", baseUrl);
+  
   const [categories, setCategories] = useState<CategoriesType>({
     data: [],
     message: '',
