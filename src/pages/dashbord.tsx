@@ -72,7 +72,7 @@ const StatsPage: React.FC = () => {
           mb: 3,
         }}
       >
-        <Typography variant="h1">Statistiques du back-office</Typography>
+        <Typography variant="h1">Statistiques du back-office test</Typography>
         <Button variant="outlined" onClick={handleExportCsv}>
           Exporter en CSV
         </Button>
